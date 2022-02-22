@@ -44,21 +44,30 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 gamma = 1
 x_start = 1
 y_start = 1
-num_iterations = 100
+num_iterations = 1000
 
 
 
-alpha_0 = 0.0001
-t = 0
-beta = 0.9999999
+zeta_0 = 0
+t = 1
+beta1 = 0.9
+beta2 = 0.99
 sum = 0
 
-curr_alpha = alpha_0
+
+alpha = 0.1
+
+curr_zeta = zeta_0
 
 curr_xy = [x_start, y_start]
 #curr_x = 1
 #curr_y = y_start
 print(curr_xy)
+
+slope = np.array([dfdx(curr_xy), dfdy(curr_xy)])
+
+curr_m = 0
+curr_v = 0
 
 curr_z = f(curr_xy)
 
@@ -69,32 +78,43 @@ z_values = []
 for iteration in range(num_iterations):
     print(f"Iteration:\t{iteration}")
     
-    #if abs(curr_xy[0]) > 10000000 or abs(curr_xy[1]) > 10000000:
-    #    break
-    
     xy_guesses.append(curr_xy)
     z_values.append(curr_z)
     
     print(f"Current XY:\t{curr_xy}")
-    # print(f"Current Y:\t{curr_y}")
     print(f"Current Z:\t{curr_z}")
     
     slope = np.array([dfdx(curr_xy), dfdy(curr_xy)])
     print(f"Slope:\t{slope}")
+
+    curr_m = beta1*curr_m + (1-beta1)*(slope)
+    print(f"M:\t{curr_m}")
+
+    curr_v = beta2*curr_v + (1-beta2)*(np.square(slope))
+    print(f"V:\t{curr_v}")
     
-    curr_xy = curr_xy - curr_alpha*slope
+    m_hat = curr_m/(1-beta1**t)
+    print(f"M HAT:\t{m_hat}")
+
+    print(f"OVER:\t{(1-beta1**t)}")
+
+    v_hat = curr_v/(1-beta2**t)
+    print(f"V HAT:\t{v_hat[0]}")
+
+    #print(f"sqrt V HAT:\t{str(np.sqrt(v_hat[0]))}")
+
+    curr_xy = curr_xy - alpha*(m_hat/((np.power(v_hat, 0.5))+epsilon))
     curr_z = f(curr_xy)
     print(f"New XY:\t{curr_xy}")
-    # print(f"Current Y:\t{curr_y}")
     print(f"New Z:\t{curr_z}")
         
-    sum = beta*sum + (1-beta)*(slope.dot(np.transpose(slope)))
-    print(f"SUM:\t{sum}")
+    # sum = beta*sum + (1-beta)*(slope.dot(np.transpose(slope)))
+    # print(f"SUM:\t{sum}")
 
     
-    curr_alpha = alpha_0/(math.sqrt(sum) + epsilon)
+    #curr_alpha = alpha_0/(math.sqrt(sum) + epsilon)
 
-    print(f"ALPHA:\t{curr_alpha}")
+    #print(f"ALPHA:\t{curr_alpha}")
     
     t = t+1
     

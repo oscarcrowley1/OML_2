@@ -15,8 +15,8 @@ x0, y0 = sympy.symbols("x0, y0", real=True)
 #x0=sympy.Array([x00,x01])
 #gamma_func=g*(x00**2)
 #func= 2*x0*x0 + y0*y0
-#func= 8*(x0-10)**4+9*(y0-0)**2
-func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
+func= 8*(x0-10)**4+9*(y0-0)**2
+#func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
 x_deriv = sympy.diff(func, x0)
 y_deriv = sympy.diff(func, y0)
 print(func,x_deriv,y_deriv)
@@ -44,16 +44,18 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 gamma = 1
 x_start = 1
 y_start = 1
-num_iterations = 100
+num_iterations = 1000
 
 
 
-alpha_0 = 0.0001
+zeta_0 = 0
 t = 0
-beta = 0.9999999
+beta = 0.9
 sum = 0
 
-curr_alpha = alpha_0
+alpha = 0.0001
+
+curr_zeta = zeta_0
 
 curr_xy = [x_start, y_start]
 #curr_x = 1
@@ -69,32 +71,30 @@ z_values = []
 for iteration in range(num_iterations):
     print(f"Iteration:\t{iteration}")
     
-    #if abs(curr_xy[0]) > 10000000 or abs(curr_xy[1]) > 10000000:
-    #    break
-    
     xy_guesses.append(curr_xy)
     z_values.append(curr_z)
     
     print(f"Current XY:\t{curr_xy}")
-    # print(f"Current Y:\t{curr_y}")
     print(f"Current Z:\t{curr_z}")
     
     slope = np.array([dfdx(curr_xy), dfdy(curr_xy)])
     print(f"Slope:\t{slope}")
+
+    curr_zeta = beta*curr_zeta + alpha*slope
+    print(f"ZETA:\t{curr_zeta}")
     
-    curr_xy = curr_xy - curr_alpha*slope
+    curr_xy = curr_xy - curr_zeta
     curr_z = f(curr_xy)
     print(f"New XY:\t{curr_xy}")
-    # print(f"Current Y:\t{curr_y}")
     print(f"New Z:\t{curr_z}")
         
-    sum = beta*sum + (1-beta)*(slope.dot(np.transpose(slope)))
-    print(f"SUM:\t{sum}")
+    # sum = beta*sum + (1-beta)*(slope.dot(np.transpose(slope)))
+    # print(f"SUM:\t{sum}")
 
     
-    curr_alpha = alpha_0/(math.sqrt(sum) + epsilon)
+    #curr_alpha = alpha_0/(math.sqrt(sum) + epsilon)
 
-    print(f"ALPHA:\t{curr_alpha}")
+    #print(f"ALPHA:\t{curr_alpha}")
     
     t = t+1
     
