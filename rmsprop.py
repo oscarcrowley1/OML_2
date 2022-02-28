@@ -46,83 +46,89 @@ x_start = 1
 y_start = 1
 num_iterations = 100
 
+alpha_range = [0.0001, 0.001, 0.01]
+for alpha_0 in alpha_range:
+    # alpha_0 = 0.0001
+    t = 0
+    beta = 0.9999999
+    sum = 0
 
+    curr_alpha = alpha_0
 
-alpha_0 = 0.0001
-t = 0
-beta = 0.9999999
-sum = 0
+    curr_xy = [x_start, y_start]
+    #curr_x = 1
+    #curr_y = y_start
+    print(curr_xy)
 
-curr_alpha = alpha_0
-
-curr_xy = [x_start, y_start]
-#curr_x = 1
-#curr_y = y_start
-print(curr_xy)
-
-curr_z = f(curr_xy)
-
-xy_guesses = []
-#y_guesses = []
-z_values = []
-
-for iteration in range(num_iterations):
-    print(f"Iteration:\t{iteration}")
-    
-    #if abs(curr_xy[0]) > 10000000 or abs(curr_xy[1]) > 10000000:
-    #    break
-    
-    xy_guesses.append(curr_xy)
-    z_values.append(curr_z)
-    
-    print(f"Current XY:\t{curr_xy}")
-    # print(f"Current Y:\t{curr_y}")
-    print(f"Current Z:\t{curr_z}")
-    
-    slope = np.array([dfdx(curr_xy), dfdy(curr_xy)])
-    print(f"Slope:\t{slope}")
-    
-    curr_xy = curr_xy - curr_alpha*slope
     curr_z = f(curr_xy)
-    print(f"New XY:\t{curr_xy}")
-    # print(f"Current Y:\t{curr_y}")
-    print(f"New Z:\t{curr_z}")
+
+    xy_guesses = []
+    #y_guesses = []
+    z_values = []
+
+    for iteration in range(num_iterations):
+        print(f"Iteration:\t{iteration}")
         
-    sum = beta*sum + (1-beta)*(slope.dot(np.transpose(slope)))
-    print(f"SUM:\t{sum}")
-
-    
-    curr_alpha = alpha_0/(math.sqrt(sum) + epsilon)
-
-    print(f"ALPHA:\t{curr_alpha}")
-    
-    t = t+1
-    
-    #step = slope*alpha
-    #print(f"STEP:\t{step}")
-    
-    
-    
-    print("\n")
-    # curr_x = curr_x - step
-    # curr_y = f(curr_x, gamma)
+        #if abs(curr_xy[0]) > 10000000 or abs(curr_xy[1]) > 10000000:
+        #    break
+        
+        xy_guesses.append(curr_xy)
+        z_values.append(curr_z)
+        
+        print(f"Current XY:\t{curr_xy}")
+        # print(f"Current Y:\t{curr_y}")
+        print(f"Current Z:\t{curr_z}")
+        
+        slope = np.array([dfdx(curr_xy), dfdy(curr_xy)])
+        print(f"Slope:\t{slope}")
+        
+        curr_xy = curr_xy - curr_alpha*slope
+        curr_z = f(curr_xy)
+        print(f"New XY:\t{curr_xy}")
+        # print(f"Current Y:\t{curr_y}")
+        print(f"New Z:\t{curr_z}")
             
-        # plt.title("x and f(x)")
-        # plt.xlabel("x")
-        # plt.ylabel("f(x)")
-        # plt.plot(x_guesses, y_values)
-        # #plt.show()
+        sum = beta*sum + (1-beta)*(slope.dot(np.transpose(slope)))
+        print(f"SUM:\t{sum}")
 
-xy_guesses = np.array(xy_guesses)
-z_values = np.array(z_values)
-      
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=range(iteration+1))
-# plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=z_values)
-plt.show()
+        
+        curr_alpha = alpha_0/(math.sqrt(sum) + epsilon)
 
-plt.plot(z_values)
+        print(f"ALPHA:\t{curr_alpha}")
+        
+        t = t+1
+        
+        #step = slope*alpha
+        #print(f"STEP:\t{step}")
+        
+        
+        
+        print("\n")
+        # curr_x = curr_x - step
+        # curr_y = f(curr_x, gamma)
+                
+            # plt.title("x and f(x)")
+            # plt.xlabel("x")
+            # plt.ylabel("f(x)")
+            # plt.plot(x_guesses, y_values)
+            # #plt.show()
+
+    xy_guesses = np.array(xy_guesses)
+    z_values = np.array(z_values)
+        
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=range(iteration+1))
+    # # plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=z_values)
+    # plt.show()
+
+    plt.plot(z_values, label=f"alpha={alpha_0}")
+
+plt.xlabel("# Iterations")
+plt.ylabel("f(x, y)")
+plt.title(f"RMSProp with beta={beta} and varying alpha")
+plt.legend()
+plt.yscale('log')
 plt.show()
 
 # art3d.Line3D(xy_guesses[:, 0], xy_guesses[:, 1], z_values)
