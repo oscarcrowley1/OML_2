@@ -16,7 +16,21 @@ x0, y0 = sympy.symbols("x0, y0", real=True)
 #gamma_func=g*(x00**2)
 #func= 2*x0*x0 + y0*y0
 #func= 8*(x0-10)**4+9*(y0-0)**2
-func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
+#func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
+func_num = 1
+
+if func_num == 1:
+    func= 8*(x0-10)**4+9*(y0-0)**2
+    alpha_range = [0.00001, 0.0001, 0.001, 0.01]#, 0.1, 1]
+    #alpha_range = np.logspace(-10, -3, 8)
+    x_start = 1
+    y_start = 1
+else:
+    func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
+    alpha_range = [0.001, 0.01, 0.1, 1, 10, 100]
+    x_start = 15
+    y_start = 10
+
 x_deriv = sympy.diff(func, x0)
 y_deriv = sympy.diff(func, y0)
 print(func,x_deriv,y_deriv)
@@ -42,15 +56,13 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 
 #for alpha in alpha_range:
 gamma = 1
-x_start = 1
-y_start = 1
-num_iterations = 100
+num_iterations = 15000
 
-alpha_range = [0.0001, 0.001, 0.01]
+
 for alpha_0 in alpha_range:
     # alpha_0 = 0.0001
-    t = 0
-    beta = 0.9999999
+    t = 1
+    beta = 0.9
     sum = 0
 
     curr_alpha = alpha_0
