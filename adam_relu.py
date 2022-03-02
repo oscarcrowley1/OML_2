@@ -29,8 +29,9 @@ elif func_num == 2:
     y_start = 10  
 else:
     func = sympy.Max(x0, 0)
+    #alpha_range = [100, 10, 1, 0.1, 0.01, 0.001]
     alpha_range = [0.1]
-    x_start = -1
+    x_start = +1
     y_start = 0
 #func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
 x_deriv = sympy.diff(func, x0)
@@ -91,6 +92,8 @@ for alpha in alpha_range:
     xy_guesses = []
     #y_guesses = []
     z_values = []
+    m_hats = []
+    v_hats = []
 
     for iteration in range(num_iterations):
         print(f"Iteration:\t{iteration}")
@@ -117,6 +120,9 @@ for alpha in alpha_range:
 
         v_hat = curr_v/(1-beta2**t)
         print(f"V HAT:\t{v_hat[0]}")
+        
+        m_hats.append(m_hat)
+        v_hats.append(v_hat)
 
         #print(f"sqrt V HAT:\t{str(np.sqrt(v_hat[0]))}")
 
@@ -152,6 +158,7 @@ for alpha in alpha_range:
 
     xy_guesses = np.array(xy_guesses)
     z_values = np.array(z_values)
+    
         
     # fig = plt.figure()
     # ax = fig.add_subplot(111, projection='3d')
@@ -159,7 +166,8 @@ for alpha in alpha_range:
     # # plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=z_values)
     # plt.show()
 
-    plt.plot(z_values, label=f"alpha={alpha}")
+    plt.plot(m_hats, label=f"m_hats={alpha}")
+    plt.plot(v_hats, label=f"v_hats={alpha}")
 
 plt.xlabel("# Iterations")
 plt.ylabel("f(x, y)")
