@@ -17,18 +17,23 @@ x0, y0 = sympy.symbols("x0, y0", real=True)
 #func= 2*x0*x0 + y0*y0
 #func= 8*(x0-10)**4+9*(y0-0)**2
 #func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
-func_num=2
+func_num=0
 if func_num == 1:
     func= 8*(x0-10)**4+9*(y0-0)**2
     alpha_range = [0.000001, 0.00001, 0.0001, 0.001, 0.01]#, 0.1, 1]
     #alpha_range = np.logspace(-10, -3, 8)
     x_start = 1
     y_start = 1
-else:
+elif func_num == 2:
     func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
     alpha_range = [10, 1, 0.1, 0.01, 0.001]
     x_start = 15
     y_start = 10
+else:
+    func = sympy.Max(x0, 0)
+    alpha_range = [0.1]
+    x_start = -1
+    y_start = 0
 
 
 x_deriv = sympy.diff(func, x0)
@@ -58,7 +63,7 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 gamma = 1
 # x_start = 1
 # y_start = 1
-num_iterations = 1500
+num_iterations = 500
 
 # alpha_range = [0.00001, 0.0001, 0.001, 0.01, 0.1, 1]
 
@@ -149,7 +154,7 @@ plt.xlabel("# Iterations")
 plt.ylabel("f(x, y)")
 plt.title(f"HeavyBall with beta={beta} and varying alpha")
 plt.legend()
-plt.yscale('log')
+#plt.yscale('log')
 plt.show()
 
 # art3d.Line3D(xy_guesses[:, 0], xy_guesses[:, 1], z_values)

@@ -17,7 +17,7 @@ x0, y0 = sympy.symbols("x0, y0", real=True)
 #func= 2*x0*x0 + y0*y0
 #func= 8*(x0-10)**4+9*(y0-0)**2
 #func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
-func_num = 1
+func_num = 0
 
 if func_num == 1:
     func= 8*(x0-10)**4+9*(y0-0)**2
@@ -25,11 +25,16 @@ if func_num == 1:
     #alpha_range = np.logspace(-10, -3, 8)
     x_start = 1
     y_start = 1
-else:
+elif func_num == 2:
     func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
     alpha_range = [0.001, 0.01, 0.1, 1, 10, 100]
     x_start = 15
     y_start = 10
+else:
+    func = sympy.Max(x0, 0)
+    alpha_range = [0.1]
+    x_start = +100
+    y_start = 0
 
 x_deriv = sympy.diff(func, x0)
 y_deriv = sympy.diff(func, y0)
@@ -56,13 +61,13 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 
 #for alpha in alpha_range:
 gamma = 1
-num_iterations = 15000
+num_iterations = 1100
 
 
 for alpha_0 in alpha_range:
     # alpha_0 = 0.0001
-    t = 1
-    beta = 0.25
+    t = 0
+    beta = 0.9
     sum = 0
 
     curr_alpha = alpha_0
@@ -77,6 +82,7 @@ for alpha_0 in alpha_range:
     xy_guesses = []
     #y_guesses = []
     z_values = []
+    step_sizes = []
 
     for iteration in range(num_iterations):
         print(f"Iteration:\t{iteration}")
@@ -95,6 +101,8 @@ for alpha_0 in alpha_range:
         print(f"Slope:\t{slope}")
         
         curr_xy = curr_xy - curr_alpha*slope
+        step_sizes.append((curr_alpha*slope[0]))
+        
         curr_z = f(curr_xy)
         print(f"New XY:\t{curr_xy}")
         # print(f"Current Y:\t{curr_y}")
@@ -135,12 +143,13 @@ for alpha_0 in alpha_range:
     # plt.show()
 
     plt.plot(z_values, label=f"alpha={alpha_0}")
+    #plt.plot(step_sizes, label=f"step={alpha_0}")
 
 plt.xlabel("# Iterations")
 plt.ylabel("f(x, y)")
-plt.title(f"RMSProp with beta={beta} and varying alpha")
+plt.title(f"RMSProp with beta={beta} and alpha={alpha_0}")
 plt.legend()
-plt.yscale('log')
+#plt.yscale('log')
 plt.show()
 
 # art3d.Line3D(xy_guesses[:, 0], xy_guesses[:, 1], z_values)

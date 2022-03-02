@@ -1,4 +1,5 @@
 import math
+from turtle import color
 from matplotlib import projections
 import sympy
 import matplotlib.pyplot as plt
@@ -17,19 +18,23 @@ x0, y0 = sympy.symbols("x0, y0", real=True)
 #func= 2*x0*x0 + y0*y0
 #func= 8*(x0-10)**4+9*(y0-0)**2
 #func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
-func_num = 1
+func_num = 2
 
 if func_num == 1:
     func= 8*(x0-10)**4+9*(y0-0)**2
-    alpha_range = [0.00001, 0.0001, 0.001, 0.01]#, 0.1, 1]
+    #alpha_range = [0.00001, 0.0001, 0.001, 0.01]#, 0.1, 1]
+    alpha_range = [0.001]#[0.00001, 0.0001, 0.001, 0.01]#, 0.1, 1]
     #alpha_range = np.logspace(-10, -3, 8)
     x_start = 1
     y_start = 1
 else:
     func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
-    alpha_range = [0.001, 0.01, 0.1, 1, 10, 100]
+    #alpha_range = [0.001, 0.01, 0.1, 1, 10, 100]
+    alpha_range = [1]
     x_start = 15
     y_start = 10
+    def cont_func(x, y):
+        return np.maximum(x-10, 0)+9*(np.abs(y))
 
 x_deriv = sympy.diff(func, x0)
 y_deriv = sympy.diff(func, y0)
@@ -56,13 +61,19 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 
 #for alpha in alpha_range:
 gamma = 1
-num_iterations = 15000
+num_iterations = 1000
+
+x_space = np.linspace(5, 20, 50)
+y_space = np.linspace(-5, +15, 50)
+
+X, Y = np.meshgrid(x_space, y_space)
+Z = cont_func(X, Y)
 
 
 for alpha_0 in alpha_range:
     # alpha_0 = 0.0001
     t = 1
-    beta = 0.25
+    beta = 0.9
     sum = 0
 
     curr_alpha = alpha_0
@@ -134,8 +145,18 @@ for alpha_0 in alpha_range:
     # # plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=z_values)
     # plt.show()
 
-    plt.plot(z_values, label=f"alpha={alpha_0}")
+    cp = plt.contourf(X, Y, Z)#, colors='black')
+    plt.colorbar(cp, label="f(x, y)")
+    # plt.scatter(xy_guesses[0], xy_guesses[1], c=range(num_iterations))
+    plt.plot(xy_guesses[:, 0], xy_guesses[:, 1], color='r', label="Descent")
+    plt.xlabel("x Value")
+    plt.ylabel("y Value")
+    plt.show()
+    # plt.plot(z_values, label=f"alpha={alpha_0}")
 
+
+
+# plt.plot(z_values, label=f"alpha={alpha_0}")
 plt.xlabel("# Iterations")
 plt.ylabel("f(x, y)")
 plt.title(f"RMSProp with beta={beta} and varying alpha")

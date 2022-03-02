@@ -18,15 +18,21 @@ x0, y0 = sympy.symbols("x0, y0", real=True)
 func_num=1
 if func_num == 1:
     func= 8*(x0-10)**4+9*(y0-0)**2
-    alpha_range = [1000, 100, 10, 1, 0.1, 0.01, 0.001]#, 0.1, 1]
+    #alpha_range = [1000, 100, 10, 1, 0.1, 0.01, 0.001]#, 0.1, 1]
+    alpha_range = [1]
     #alpha_range = np.logspace(-10, -3, 8)
     x_start = 1
     y_start = 1
+    def cont_func(x, y):
+        return 8*np.power(x-10, 4)+9*np.power(y-0, 2)
 else:
     func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
     alpha_range = [100, 10, 1, 0.1, 0.01, 0.001]
     x_start = 15
     y_start = 10
+    def cont_func(x, y):
+        return np.maximum(x-10, 0)+9*(np.abs(y))
+    
 #func= sympy.Max(x0-10,0)+9*sympy.Abs(y0-0)
 x_deriv = sympy.diff(func, x0)
 y_deriv = sympy.diff(func, y0)
@@ -55,15 +61,20 @@ x_start_range = [0.01, 0.1, 1, 10, 100]
 gamma = 1
 # x_start = 1
 # y_start = 1
-num_iterations = 7500
+num_iterations = 2000
 
+x_space = np.linspace(7, 11, 50)
+y_space = np.linspace(-2.5, +2.5, 50)
+
+X, Y = np.meshgrid(x_space, y_space)
+Z = cont_func(X, Y)
 # alpha_range = [0.01, 0.1, 1, 10]
 
 for alpha in alpha_range:
     zeta_0 = 0
     t = 1
-    beta1 = 0.25
-    beta2 = 0.25
+    beta1 = 0.9
+    beta2 = 0.99
     sum = 0
 
 
@@ -86,6 +97,7 @@ for alpha in alpha_range:
     xy_guesses = []
     #y_guesses = []
     z_values = []
+    step_sizes = []
 
     for iteration in range(num_iterations):
         print(f"Iteration:\t{iteration}")
@@ -116,6 +128,9 @@ for alpha in alpha_range:
         #print(f"sqrt V HAT:\t{str(np.sqrt(v_hat[0]))}")
 
         curr_xy = curr_xy - alpha*(m_hat/((np.power(v_hat, 0.5))+epsilon))
+        step_xy = alpha*(m_hat/((np.power(v_hat, 0.5))+epsilon))
+        step_sizes.append(math.sqrt(np.power(step_xy[0], 2)+np.power(step_xy[1], 2)))
+        
         curr_z = f(curr_xy)
         print(f"New XY:\t{curr_xy}")
         print(f"New Z:\t{curr_z}")
@@ -153,8 +168,22 @@ for alpha in alpha_range:
     # plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=range(iteration+1))
     # # plt.scatter(xy_guesses[:, 0], xy_guesses[:, 1], c=z_values)
     # plt.show()
+    
+    cp = plt.contourf(X, Y, Z)#, colors='black')
+    plt.colorbar(cp, label="f(x, y)")
+    #plt.scatter(xy_guesses[180, 0], xy_guesses[180, 1])
+    plt.plot(xy_guesses[:, 0], xy_guesses[:, 1], color='r', label="Descent")
+    
+    #plt.scatter(xy_guesses[500, 0], xy_guesses[500, 1], label="First Spike", c="m", marker="x")
+    #plt.scatter(xy_guesses[800, 0], xy_guesses[800, 1], label="Settling", c="y", marker="x")
+    plt.xlabel("x Value")
+    plt.ylabel("y Value")
+    plt.legend()
+    plt.show()
+    
+    # plt.plot(z_values, label=f"alpha={alpha}")
 
-    plt.plot(z_values, label=f"alpha={alpha}")
+plt.plot(step_sizes, label=f"alpha={alpha}")
 
 plt.xlabel("# Iterations")
 plt.ylabel("f(x, y)")
